@@ -12,7 +12,7 @@ export default function Page() {
         event.preventDefault();
         const res = await signInFn({ email, password })
         if (res) route.push('/chat')
-    };
+    }
     return (
         <div style={{ backgroundImage: `url('https://source.unsplash.com/random')` }}>
             <div className="flex h-screen items-center backdrop-blur-sm flex-col justify-center" >
