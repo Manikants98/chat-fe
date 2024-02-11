@@ -1,12 +1,13 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 let token: string | null = null;
 
-if (typeof window !== 'undefined') {
-  token = localStorage.getItem('chat_token');
+if (typeof window !== "undefined") {
+  token = localStorage.getItem("chat_token");
 }
 
 export const baseURL = 'https://chatmkx.onrender.com/';
+// export const baseURL = "http://localhost:3001/";
 
 const axio: AxiosInstance = axios.create({ baseURL });
 

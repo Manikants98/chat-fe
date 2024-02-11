@@ -1,5 +1,5 @@
 'use client'
-import axio from '@/app/(configs)/axios.config'
+import axio from '@/axios.config';
 import { Avatar } from '@mui/material'
 import React, { FormEvent, useEffect, useState } from 'react'
 interface SelectType {
@@ -8,7 +8,7 @@ interface SelectType {
 
 const Chat = () => {
     const [chatList, setChatList] = useState([])
-    const [messages, setMessages] = useState([])
+    const [messages, setMessages] = useState<any>([])
     const [message, setMessage] = useState('')
     const [select, setSelect] = useState<SelectType | null>(null);
     const [user, setUser] = useState<SelectType | null>(null);
@@ -16,6 +16,7 @@ const Chat = () => {
         try {
             const { data } = await axio.get('/contacts')
             setChatList(data.contacts)
+
         } catch (error) {
             console.log(error);
         }
@@ -25,6 +26,10 @@ const Chat = () => {
             const { data } = await axio.get('/messages', { params: { contact_id: select?._id } });
             setMessages(data.messages);
             setUser(data.user)
+            const length = data.messages.length
+            const lastMessage = data.messages?.[length - 1]?._id
+            const chat = document.getElementById(lastMessage)
+            chat?.scrollIntoView({ behavior: "smooth", block: "end" })
         } catch (error) {
             console.log(error);
         }
@@ -40,7 +45,6 @@ const Chat = () => {
         }
     };
 
-    console.log(select);
 
     useEffect(() => {
         fetchChatFn()
@@ -49,6 +53,13 @@ const Chat = () => {
     useEffect(() => {
         select && fetchMessagesFn()
     }, [select])
+
+    useEffect(() => {
+        const length = messages?.length
+        const lastMessage = messages[length - 1]?._id
+        const chat = document.getElementById(lastMessage)
+        chat?.scrollIntoView({ behavior: "smooth", block: "end" })
+    }, [messages])
 
     return (
         <div className="flex h-screen antialiased text-gray-800">
@@ -75,12 +86,9 @@ const Chat = () => {
                         </div>
                         <div className="ml-2 font-bold text-xl">Real Time Chat</div>
                     </div>
-                    <div
-                        className="flex flex-col items-center bg-indigo-100 border border-gray-200 mt-4 w-full py-6 px-4 rounded-lg"
+                    <div className="flex flex-col items-center bg-indigo-100 border border-gray-200 mt-4 w-full py-6 px-4 rounded-lg"
                     >
-
                         <Avatar alt='M' className="h-20 bg-blue-200 w-20 rounded-full border overflow-hidden" />
-
                         <div className="text-sm font-semibold mt-2">Mani Kant Sharma</div>
                         <div className="text-xs text-gray-500">ReactJs Developer</div>
                         <div className="flex flex-row items-center mt-3">
@@ -108,8 +116,6 @@ const Chat = () => {
                                     </button>
                                 )
                             })}
-
-
                         </div>
 
                     </div>
@@ -123,7 +129,7 @@ const Chat = () => {
                                 <div className="grid grid-cols-12 gap-y-2">
                                     {messages?.map((i: any) => {
                                         return (
-                                            <>{user?._id !== i.sender._id ? <div className="col-start-1 col-end-8 p-3 rounded-lg">
+                                            <>{user?._id !== i.sender._id ? <div id={i.id} className="col-start-1 col-end-8 p-3 rounded-lg">
                                                 <div className="flex flex-row items-center">
                                                     <div
                                                         className="flex capitalize text-white items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
@@ -138,28 +144,26 @@ const Chat = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div> : <div className="col-start-6 col-end-13 p-3 rounded-lg">
-                                                <div className="flex items-center justify-start flex-row-reverse">
-                                                    <div
-                                                        className="flex capitalize text-white items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
-                                                    >
-                                                        {i?.sender?.name?.slice(0, 1)}
-                                                    </div>
-                                                    <div
-                                                        className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl"
-                                                    >
-                                                        <div>
-                                                            {i.message}
+                                            </div> :
+                                                <div id={i.id} className="col-start-6 col-end-13 p-3 rounded-lg">
+                                                    <div className="flex items-center justify-start flex-row-reverse">
+                                                        <div
+                                                            className="flex capitalize text-white items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
+                                                        >
+                                                            {i?.sender?.name?.slice(0, 1)}
+                                                        </div>
+                                                        <div
+                                                            className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl"
+                                                        >
+                                                            <div>
+                                                                {i.message}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>}
-
+                                                </div>}
                                             </>
                                         )
                                     })}
-
-
                                 </div>
                             </div>
                         </div>
