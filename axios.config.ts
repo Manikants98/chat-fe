@@ -1,13 +1,13 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 let token: string | null = null;
 
-if (typeof window !== "undefined") {
-  token = localStorage.getItem("chat_token");
+if (typeof window !== 'undefined') {
+  token = localStorage.getItem('chat_token');
 }
 
 export const baseURL = 'https://chatmkx.onrender.com/';
-// export const baseURL = "http://localhost:3001/";
+// export const baseURL = 'http://localhost:4000/';
 
 const axio: AxiosInstance = axios.create({ baseURL });
 
@@ -16,12 +16,12 @@ axio.interceptors.request.use(
     if (token) {
       config.headers = {
         ...config.headers,
-        Authorization: token,
+        Authorization: token
       };
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
@@ -30,7 +30,7 @@ axio.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );

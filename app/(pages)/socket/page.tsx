@@ -9,14 +9,14 @@ interface Message {
     message: string;
 }
 
-const socket: React.FC = () => {
+const ChatSocket: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [message, setMessage] = useState("");
     const sender = "65bfbe2faecd8c9efc906200";
     useEffect(() => {
         const newSocket: Socket = io(baseURL, {
-            path: "/socket",
+            path: "/socket.io",
         });
 
         newSocket.on("connect", () => {
@@ -121,4 +121,4 @@ const socket: React.FC = () => {
     );
 };
 
-export default socket;
+export default ChatSocket;
