@@ -1,5 +1,6 @@
 'use client'
 import { baseURL } from "@/axios.config";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
@@ -10,7 +11,7 @@ interface Message {
 }
 
 const ChatSocket: React.FC = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<any>([]);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [message, setMessage] = useState("");
     const sender = "65bfbe2faecd8c9efc906200";
@@ -27,9 +28,7 @@ const ChatSocket: React.FC = () => {
 
         newSocket.on("error", handleSocketError);
 
-        return () => {
-            newSocket.disconnect();
-        };
+
     }, []);
 
     useEffect(
@@ -42,8 +41,8 @@ const ChatSocket: React.FC = () => {
         [socket]
     );
 
-    const handleMessages = (data: { message: string; messages: Message[] }) => {
-        setMessages(data.messages);
+    const handleMessages = (data: { message: string; messages: any }) => {
+        setMessages([...data.messages, message]);
     };
 
     const handleSocketError = (error: any) => {
@@ -56,20 +55,14 @@ const ChatSocket: React.FC = () => {
         }
     };
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         if (socket && message.trim() !== "") {
-            socket.emit(
-                "sendMessage",
-                {
-                    sender: "65bfbe2faecd8c9efc906200",
-                    message: message,
-                    message_type: "text",
-                    contact_id: "65c1fa406709e451bc22f928",
-                },
-                (response: any) => {
-                    console.log("Message sent successfully:", response);
-                }
-            );
+            socket.emit("sendMessage", {
+                sender: "65bfbe2faecd8c9efc906200",
+                message: message,
+                message_type: "text",
+                contact_id: "65c1fa406709e451bc22f928"
+            });
             handleGetMessages();
             setMessage("");
         }
@@ -89,29 +82,33 @@ const ChatSocket: React.FC = () => {
                         <div
                             className="flex w-full"
                             style={{
-                                justifyContent: message.sender._id === sender ? "end" : "start",
+                                justifyContent: message.sender?._id === sender ? "end" : "start",
                             }}
                         >
-                            <p
+                            <div
                                 key={message._id}
-                                className="p-2 text-white bg-blue-500 rounded max-w-[25%]"
+                                className="p-2 text-white bg-blue-500 rounded w-[25%]"
                             >
-                                {message.message}
-                            </p>
+                                <p>{message.message}</p>
+                                <div className="flex justify-end">
+                                    <p>{moment(message.created_at).calendar()}</p>
+                                </div>
+                            </div>
+
                         </div>
                     );
                 })}
             </div>
-            <div className="flex items-center gap-2 p-2">
+            <div className="flex items-center w-full gap-2 p-2">
                 <input
                     type="text"
                     placeholder="Message"
-                    className="p-2 border rounded"
+                    className="p-2 border rounded w-full"
                     value={message}
                     onChange={(event) => setMessage(event.target.value)}
                 />
                 <button
-                    className="p-2 text-white bg-blue-500 rounded"
+                    className="p-2 text-white w-20 bg-blue-500 rounded"
                     onClick={sendMessage}
                 >
                     Send
